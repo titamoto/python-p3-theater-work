@@ -1,5 +1,5 @@
-from sqlalchemy import ForeignKey, Column, Integer, String, MetaData, Boolean
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy import ForeignKey, Column, Integer, String, MetaData, Boolean, create_engine
+from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 convention = {
@@ -20,6 +20,15 @@ class Audition(Base):
     role_id = Column(Integer(), ForeignKey('role.id'))
 
     role = relationship('Role', back_populates='auditions')
+
+    def call_back(self):
+        engine = create_engine('sqlite:///theater.db')
+        Base.metadata.create_all(engine)
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        session.query(Audition).filter(Audition.id == self.id).update({'hired' : True})
+        session.commit()
+        return session.query(Audition).filter(Audition.id == self.id).first()
 
     def __repr__(self):
         return f'Audition(id={self.id}, ' + \

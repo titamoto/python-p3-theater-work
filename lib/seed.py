@@ -11,7 +11,8 @@ engine = create_engine('sqlite:///theater.db')
 Session = sessionmaker(bind=engine)
 session = Session()
 
-audition = [Audition(actor = fake.name(), location = fake.address(), phone = fake.random_int(5030000, 5039999), hired = fake.boolean(chance_of_getting_true = (100/3))) for i in range(30)]
+# hired = fake.boolean(chance_of_getting_true = (100/3))
+audition = [Audition(actor = fake.name(), location = fake.address(), phone = fake.random_int(5030000, 5039999), hired = False) for i in range(30)]
 role = [Role(character_name = fake.name()) for i in range(10)]
 
 def delete_records():
@@ -24,6 +25,7 @@ def create_records():
     session.commit()
     return audition, role
 
+# how to relate hired actors to unique roles?
 def relate_records(audition, role):
     for aud in audition:
         aud.role = rc(role)
